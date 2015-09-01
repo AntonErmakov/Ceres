@@ -1410,10 +1410,11 @@ void StokesProblem<dim>::update_quadrature_point_history() {
 template<int dim>
 void StokesProblem<dim>::update_time_interval()
 {
+	// move_goal_per_step is the variable that controls the maximum motion per step
+	// it linearly decreases from initial_disp_target to final_disp_target between steps
 	double move_goal_per_step = system_parameters::initial_disp_target -
-			((system_parameters::initial_disp_target - system_parameters::final_disp_target) /
-					system_parameters::total_viscous_steps *
-					(system_parameters::present_timestep - system_parameters::initial_elastic_iterations));
+			(system_parameters::initial_disp_target - system_parameters::final_disp_target) *
+					system_parameters::present_time / system_parameters::max_time;
 	double max_velocity = 0;
 	for(unsigned int i=0; i<solution.n_blocks()-1; i++)
 		for(unsigned int j=0; j<solution.block(i).size(); j++)
@@ -1741,7 +1742,7 @@ void StokesProblem<dim>::do_elastic_steps()
 
 		std::ofstream fout_times(times_filename.str().c_str(), std::ios::app);
 		fout_times << system_parameters::present_timestep << " "
-									<< system_parameters::present_time << " 0" << "\n";
+									<< system_parameters::present_time/SECSINYEAR << " 0" << "\n";
 		fout_times.close();
 		std::cout << "\n\nElastic iteration " << elastic_iteration
 							<< "\n";
@@ -1796,7 +1797,7 @@ void StokesProblem<dim>::do_flow_step() {
 				times_filename << system_parameters::output_folder << "/physical_times.txt";
 				std::ofstream fout_times(times_filename.str().c_str(), std::ios::app);
 				fout_times << system_parameters::present_timestep << " "
-							<< system_parameters::present_time << " " <<  plastic_iteration << "\n";
+							<< system_parameters::present_time/SECSINYEAR << " " <<  plastic_iteration << "\n";
 				fout_times.close();
 				break;
 			}
@@ -1820,22 +1821,20 @@ void StokesProblem<dim>::run() {
 	// Computes viscous timesteps
 	system_parameters::current_time_interval = system_parameters::viscous_time;
 	unsigned int VEPstep = 0;
-	while (system_parameters::present_timestep
-			< (system_parameters::initial_elastic_iterations
-					+ system_parameters::total_viscous_steps)) {
+	while (system_parameters::present_time < system_parameters::max_time)
+	{
 		if (system_parameters::continue_plastic_iterations == false)
 			system_parameters::continue_plastic_iterations = true;
 		std::cout << "\n\nViscoelastoplastic iteration " << VEPstep << "\n\n";
 		if (system_parameters::present_timestep == 0)
 			initialize_eta_and_G();
-
 		// Computes plasticity
 		do_flow_step();
 		update_quadrature_point_history();
 		update_time_interval();
 		move_mesh();
 		system_parameters::present_timestep++;
-		system_parameters::present_time = system_parameters::present_time + system_parameters::current_time_interval;
+		system_parameters::present_time += system_parameters::current_time_interval;
 		VEPstep++;
 	}
 
@@ -1845,7 +1844,7 @@ void StokesProblem<dim>::run() {
 	times_filename << system_parameters::output_folder << "/physical_times.txt";
 	std::ofstream fout_times(times_filename.str().c_str(), std::ios::app);
 	fout_times << system_parameters::present_timestep << " "
-					<< system_parameters::present_time << " 0\n";
+					<< system_parameters::present_time/SECSINYEAR << " 0\n";
 	fout_times.close();
 }
 
@@ -1879,7 +1878,7 @@ int main(int argc, char* argv[]) {
 		deallog.depth_console(0);
 
 		StokesProblem<2> flow_problem(1);
-        flow_problem.run();
+       flow_problem.run();
 
 		t2 = std::clock();
 		float diff (((float)t2 - (float)t1) / (float)CLOCKS_PER_SEC);
