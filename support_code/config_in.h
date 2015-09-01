@@ -77,6 +77,7 @@ double tolerance_coefficient;
 
 //time step variables
 double present_time;
+double max_time;
 unsigned int present_timestep;
 unsigned int total_viscous_steps;
 }
@@ -134,6 +135,7 @@ void config_in::write_config()
 	fout_config << "present_time = " << system_parameters::present_time << endl;
 	fout_config << "present_timestep = " << system_parameters::present_timestep << endl;
 	fout_config << "total_viscous_steps = " << system_parameters::total_viscous_steps << endl;
+	fout_config << "max_time = " << system_parameters::max_time << endl;
 	
 	fout_config.close();
 }
@@ -322,7 +324,8 @@ config_in::config_in(char* filename)
 	    const Setting& time_step_parameters = root["time_step_parameters"];
 	    time_step_parameters.lookupValue("present_time", system_parameters::present_time);
 	    time_step_parameters.lookupValue("present_timestep", system_parameters::present_timestep);
-	    time_step_parameters.lookupValue("total_viscous_steps", system_parameters::total_viscous_steps);
+	    time_step_parameters.lookupValue("max_time", system_parameters::max_time);
+	    system_parameters::max_time *= SECSINYEAR;
 	  }
 	  catch(const SettingNotFoundException &nfex)
 	  {
