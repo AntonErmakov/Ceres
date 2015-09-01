@@ -326,6 +326,7 @@ config_in::config_in(char* filename)
 	    time_step_parameters.lookupValue("present_timestep", system_parameters::present_timestep);
 	    time_step_parameters.lookupValue("total_viscous_steps", system_parameters::total_viscous_steps);
 	    time_step_parameters.lookupValue("max_time", system_parameters::max_time);
+	    system_parameters::max_time *= SECSINYEAR;
 	  }
 	  catch(const SettingNotFoundException &nfex)
 	  {
