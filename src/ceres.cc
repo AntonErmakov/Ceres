@@ -1411,9 +1411,8 @@ template<int dim>
 void StokesProblem<dim>::update_time_interval()
 {
 	double move_goal_per_step = system_parameters::initial_disp_target -
-			((system_parameters::initial_disp_target - system_parameters::final_disp_target) /
-					system_parameters::total_viscous_steps *
-					(system_parameters::present_timestep - system_parameters::initial_elastic_iterations));
+			(system_parameters::initial_disp_target - system_parameters::final_disp_target) *
+					system_parameters::present_time / system_parameters::max_time;
 	double max_velocity = 0;
 	for(unsigned int i=0; i<solution.n_blocks()-1; i++)
 		for(unsigned int j=0; j<solution.block(i).size(); j++)
@@ -1430,7 +1429,6 @@ void StokesProblem<dim>::update_time_interval()
 template<int dim>
 void StokesProblem<dim>::move_mesh() {
 	std::cout << "\n" << "   Moving mesh...";
-
 
 	std::vector<bool> vertex_touched(triangulation.n_vertices(), false);
 	for (typename DoFHandler<dim>::active_cell_iterator cell =
@@ -1820,9 +1818,8 @@ void StokesProblem<dim>::run() {
 	// Computes viscous timesteps
 	system_parameters::current_time_interval = system_parameters::viscous_time;
 	unsigned int VEPstep = 0;
-	while (system_parameters::present_timestep
-			< (system_parameters::initial_elastic_iterations
-					+ system_parameters::total_viscous_steps)) {
+	while (system_parameters::present_time < system_parameters::max_time)
+	{
 		if (system_parameters::continue_plastic_iterations == false)
 			system_parameters::continue_plastic_iterations = true;
 		std::cout << "\n\nViscoelastoplastic iteration " << VEPstep << "\n\n";
@@ -1835,7 +1832,7 @@ void StokesProblem<dim>::run() {
 		update_time_interval();
 		move_mesh();
 		system_parameters::present_timestep++;
-		system_parameters::present_time = system_parameters::present_time + system_parameters::current_time_interval;
+		system_parameters::present_time += system_parameters::current_time_interval;
 		VEPstep++;
 	}
 
@@ -1848,7 +1845,6 @@ void StokesProblem<dim>::run() {
 					<< system_parameters::present_time << " 0\n";
 	fout_times.close();
 }
-
 }
 
 //====================== MAIN ======================

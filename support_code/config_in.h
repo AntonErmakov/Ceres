@@ -79,6 +79,8 @@ double tolerance_coefficient;
 double present_time;
 unsigned int present_timestep;
 unsigned int total_viscous_steps;
+double max_time;
+
 }
 
 class config_in
@@ -323,6 +325,7 @@ config_in::config_in(char* filename)
 	    time_step_parameters.lookupValue("present_time", system_parameters::present_time);
 	    time_step_parameters.lookupValue("present_timestep", system_parameters::present_timestep);
 	    time_step_parameters.lookupValue("total_viscous_steps", system_parameters::total_viscous_steps);
+	    time_step_parameters.lookupValue("max_time", system_parameters::max_time);
 	  }
 	  catch(const SettingNotFoundException &nfex)
 	  {
