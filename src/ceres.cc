@@ -1477,7 +1477,7 @@ template<int dim>
 void StokesProblem<dim>::write_vertices(unsigned char boundary_that_we_need) {
 	std::ostringstream vertices_output;
 	vertices_output << system_parameters::output_folder << "/time"
-		<< Utilities::int_to_string(system_parameters::present_timestep, 2)
+		<< Utilities::int_to_string(system_parameters::present_timestep, 3)
 		<< "_surface.txt";
 	std::ofstream fout_final_vertices(vertices_output.str().c_str());
 	fout_final_vertices.close();
@@ -1739,7 +1739,7 @@ void StokesProblem<dim>::do_elastic_steps()
 
 		std::ofstream fout_times(times_filename.str().c_str(), std::ios::app);
 		fout_times << system_parameters::present_timestep << " "
-									<< system_parameters::present_time << " 0" << "\n";
+									<< system_parameters::present_time/SECSINYEAR << " 0" << "\n";
 		fout_times.close();
 		std::cout << "\n\nElastic iteration " << elastic_iteration
 							<< "\n";
@@ -1764,7 +1764,7 @@ void StokesProblem<dim>::do_elastic_steps()
 	//				std::cout << std::endl << "\a";
 		elastic_iteration++;
 		system_parameters::present_timestep++;
-		system_parameters::present_time = system_parameters::present_time + system_parameters::current_time_interval;
+		system_parameters::present_time += system_parameters::current_time_interval;
 		move_mesh();
 	}
 }
@@ -1794,7 +1794,7 @@ void StokesProblem<dim>::do_flow_step() {
 				times_filename << system_parameters::output_folder << "/physical_times.txt";
 				std::ofstream fout_times(times_filename.str().c_str(), std::ios::app);
 				fout_times << system_parameters::present_timestep << " "
-							<< system_parameters::present_time << " " <<  plastic_iteration << "\n";
+							<< system_parameters::present_time/SECSINYEAR << " " <<  plastic_iteration << "\n";
 				fout_times.close();
 				break;
 			}
@@ -1842,7 +1842,7 @@ void StokesProblem<dim>::run() {
 	times_filename << system_parameters::output_folder << "/physical_times.txt";
 	std::ofstream fout_times(times_filename.str().c_str(), std::ios::app);
 	fout_times << system_parameters::present_timestep << " "
-					<< system_parameters::present_time << " 0\n";
+					<< system_parameters::present_time/SECSINYEAR << " 0\n";
 	fout_times.close();
 }
 }
