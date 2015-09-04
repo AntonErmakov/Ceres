@@ -1,5 +1,4 @@
-function GeneratePowerLawMesh(Files,r_mean, beta, intercept, Nrand)
-
+function GeneratePowerLawMesh(Files,r_mean, beta, intercept, Nrand, run_id)
 
 matlab_config_filename = Files.matlab_config_filename;
 config_template_filename = Files.config_template_filename;
@@ -10,8 +9,8 @@ config_list_filename = Files.config_list_filename;
 L = 50;
 
 % core axes
-a_core = 420000;
-c_core = 405000;
+a_core = 430000;
+c_core = 430000;
 
 %% Read configuration file
 
@@ -51,6 +50,8 @@ lmcosi_shape = CreateEmptylmcosi(L);
 lmcosi_shape(1,3) = r_mean;
 lmcosi_shape(2,3:4) = 0;
 lmcosi_shape(3,3:4) = 0;
+
+in_config_list = fopen(['../config_list_' run_id '.txt'],'w');
 
 for i=1:Nrand
     
@@ -104,8 +105,7 @@ for i=1:Nrand
         
         r_cell_center(l) = sqrt(x_cell_center(l).*x_cell_center(l) + ...
             y_cell_center(l).*y_cell_center(l) + ...
-            z_cell_center(l).*z_cell_center(l));
-        
+            z_cell_center(l).*z_cell_center(l));        
     end
     
 %     plot(x_cell_center,y_cell_center,'.');
@@ -117,11 +117,16 @@ for i=1:Nrand
     deformed_mesh_filename = [path '/' name '_def_' num2str(i) ext];
     deformed_mesh_quad_filename = [path '/' name '_def_quad_' num2str(i) ext];
     
-    FillConfigTemplate(config_template_filename,deformed_mesh_quad_filename,num2str(i))
+    new_name = FillConfigTemplate(config_template_filename,deformed_mesh_quad_filename,...
+        [run_id '_' num2str(i)]);
+    
+    fprintf(in_config_list,[new_name(4:end) '\n']);
     
     Write_ucd(meshStruct_def_quad,deformed_mesh_quad_filename,cell_type)
     Write_ucd(meshStruct_def,deformed_mesh_filename,cell_type)
     
 end
+
+fclose(in_config_list);
 
 
