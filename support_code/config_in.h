@@ -138,6 +138,7 @@ void config_in::write_config()
 	fout_config << "present_time = " << system_parameters::present_time << endl;
 	fout_config << "present_timestep = " << system_parameters::present_timestep << endl;
 	fout_config << "total_viscous_steps = " << system_parameters::total_viscous_steps << endl;
+	fout_config << "max_time = " << system_parameters::max_time << endl;
 	
 	fout_config.close();
 }
