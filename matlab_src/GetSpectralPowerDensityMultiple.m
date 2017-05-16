@@ -1,4 +1,4 @@
-ccc
+% ccc
 fclose all;
 
 GM = 62.68e9;
@@ -6,10 +6,12 @@ G  = 6.67e-11;
 Rref = 470000;
 M = GM/G;
 
-runname = 'may16';
-runlist_filename = '/Users/antonermakov/Dawn/FE/may16_runlist';
+runname = 'may9';
+runlist_filename = '/Users/ermakov/Dawn/FE/may9_runlist';
 in_runlist = fopen(runlist_filename,'r');
 % output_general_folder = '../output/';
+
+dropbox_folder = '/Users/ermakov/Dropbox (MIT)/ceres_public2/surface_outputs/';
 
 L = 100;
  
@@ -25,7 +27,7 @@ output_number = 1;
 while (config_filename ~= -1)
     
     % read config file
-    Files.config_template_filename = ['../' config_filename];
+    Files.config_template_filename = [config_filename];
     cfg = ReadConfig(Files);
    
     %     filename_surf = getAllFiles(folder_path,'_surface');
@@ -128,6 +130,12 @@ while (config_filename ~= -1)
             output_spectrum_filename = ['../' cfg.output_folder strrep(name,...
                 '00_surface', 'spectrum.txt')]
             
+            C = strsplit(cfg.output_folder,'/');
+            dropbox_folder_end = [C{2} '/' C{3} '/'];
+            status = mkdir([dropbox_folder dropbox_folder_end]);
+            dropbox_output_spectrum_filename = [dropbox_folder dropbox_folder_end strrep(name,...
+                '00_surface', 'spectrum.txt')];
+            
             % get outer boundary spherical harmonic expansion
             lmcosi_limb = quad2plm(filename_surf{i},L);
             
@@ -157,11 +165,16 @@ while (config_filename ~= -1)
             
             % record spectra in output default folder
             in_spec = fopen(output_spectrum_filename, 'w');
-            
             fprintf(in_spec, '%2.8E\n', t(i));
             fprintf(in_spec, '%4i %2.8E\n', [l_limb sdl_limb/1e6]');
-            
             fclose(in_spec);
+            
+            % record spectra in output dropbox folder
+            in_spec = fopen(dropbox_output_spectrum_filename, 'w');
+            fprintf(in_spec, '%2.8E\n', t(i));
+            fprintf(in_spec, '%4i %2.8E\n', [l_limb sdl_limb/1e6]');
+            fclose(in_spec);
+            
             
              %% record topography spectra in special folder
 %             output_spectrum_filename_topo = [spectra_folder '/' strrep(name,...
