@@ -1,4 +1,4 @@
-% ccc
+ccc
 fclose all;
 
 GM = 62.68e9;
@@ -6,8 +6,8 @@ G  = 6.67e-11;
 Rref = 470000;
 M = GM/G;
 
-runname = 'may9';
-runlist_filename = '/Users/ermakov/Dawn/FE/may9_runlist';
+runname = 'may19';
+runlist_filename = '/Users/ermakov/Dawn/FE/may19_runlist';
 in_runlist = fopen(runlist_filename,'r');
 % output_general_folder = '../output/';
 
