@@ -1,7 +1,11 @@
 ccc
 
 matlab_config_filename   = '../config/ConfigurationMatlab.cfg';
-cfg_template_list = 'june10_templatelist';
+cfg_templatelist_folder = '../config/templatelist/';
+cfg_templatelist_file = 'may19_templatelist';
+
+cfg_template_list = [cfg_templatelist_folder cfg_templatelist_file];
+
 Nmeshes   = 24; % number of meshes to be generated
 
 in = fopen(cfg_template_list,'r');
