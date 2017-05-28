@@ -55,7 +55,7 @@ cell_h1 = cfg.cell_height(1); % layer height in m
 cell_h2 = cfg.cell_height(2); 
 
 L = 100; % spherical harmonic degree
-nsq = 20; % number of point on the side of the cube
+nsq = 50; % number of point on the side of the cube
 
 cube_size = r2/2; % cube side in m 
 cube_rad  = sqrt(2)*cube_size; % circumscribed radius of a cube
@@ -73,7 +73,7 @@ nl  = [fix(layer_h/cell_h2) fix((r_mean-r2)/cell_h1)];
 % [xp,~,zp] = sph2cart(0,plume_lat/180*pi,plume_r);
 
 %% Run list file
-in_runlist = fopen(['../' runname '_runlist'],'w');
+in_runlist = fopen(['../runlist/' runname '_runlist'],'w');
 
 %% plotting settings
 FigureSettings
